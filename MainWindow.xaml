@@ -1,0 +1,1071 @@
+﻿<Window x:Class="KanbanBoard.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:KanbanBoard"
+        Title="Modic Metal Production Dashboard"
+        Height="1080" Width="1920"
+        WindowState="Maximized"
+        FontFamily="Segoe UI"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Loaded="Window_Loaded"
+        KeyDown="Window_KeyDown">
+
+    <Window.Resources>
+        <local:AngleToPointConverter x:Key="AngleToPointConverter"/>
+        <local:AngleToIsLargeArcConverter x:Key="AngleToIsLargeArcConverter"/>
+        <local:ProgressToColorConverter x:Key="ProgressToColorConverter"/>
+        <local:ProgressToDashArrayConverter x:Key="ProgressToDashArrayConverter"/>
+        <local:ProgressWidthConverter x:Key="ProgressWidthConverter"/>
+        <local:ProgressHeightConverter x:Key="ProgressHeightConverter"/>
+        <local:ZoomLevelConverter x:Key="ZoomLevelConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <Style x:Key="ProcessCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Opacity" Value="1.0"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Margin" Value="0,8,0,8"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="1" Opacity="0.04" Color="#000000" Direction="270"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Tag" Value="{Binding IsExpanded}"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TranslateTransform Y="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <!-- Expanded State Trigger -->
+                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                    <Setter Property="Background" Value="#FFFFFF"/>
+                    <Setter Property="BorderBrush" Value="#2563EB"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="20" ShadowDepth="2" Opacity="0.08" Color="#2563EB" Direction="270"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(TranslateTransform.Y)"
+                                             To="-6" Duration="0:0:0.25">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut"/>
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)"
+                                             To="16" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)"
+                                             To="0.08" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(TranslateTransform.Y)"
+                                             To="0" Duration="0:0:0.3">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut"/>
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.BlurRadius)"
+                                             To="12" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="(Border.Effect).(DropShadowEffect.Opacity)"
+                                             To="0.04" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StatusIconButton" TargetType="Button">
+            <Setter Property="Width" Value="58"/>
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="29"
+                                x:Name="IconBorder"
+                                RenderTransform="{TemplateBinding RenderTransform}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.12" Color="#000000"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="IconBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.24" Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="IconBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1.1" Duration="0:0:0.15" />
+                                            <DoubleAnimation Storyboard.TargetName="IconBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1.1" Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="IconBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1.0" Duration="0:0:0.15" />
+                                            <DoubleAnimation Storyboard.TargetName="IconBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1.0" Duration="0:0:0.15" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="50,26,50,26"/>
+            <Setter Property="Margin" Value="22,14,22,14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                CornerRadius="16"
+                                RenderTransform="{TemplateBinding RenderTransform}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}" Offset="0"/>
+                                    <GradientStop Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.24" Direction="270" Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}"/>
+                            </Border.Effect>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="ButtonBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="0" Opacity="0.16" Direction="270"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BadgeStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="10,3,10,3"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.25" Color="Black"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="FilterButtonBase">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Padding" Value="36,16,36,16"/>
+            <Setter Property="Margin" Value="10,0,10,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                CornerRadius="16">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}" Offset="0"/>
+                                    <GradientStop Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.4" Color="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Background.Color}"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05" CenterX="0.5" CenterY="0.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" CenterX="0.5" CenterY="0.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="CardTemplate">
+            <Border Style="{StaticResource ProcessCardStyle}" 
+                    x:Name="CardBorder"
+                    MouseLeftButtonDown="Card_Click"
+                    MouseLeftButtonUp="Card_MouseUp"
+                    TouchDown="Card_TouchDown"
+                    TouchUp="Card_TouchUp">
+
+                <Grid x:Name="ExpandableContent">
+                    <Grid.RenderTransform>
+                        <ScaleTransform x:Name="ContentScaleTransform" ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                    </Grid.RenderTransform>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            Background="#F3F4F6"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Margin="20,0,0,0"
+                            Padding="8,2,8,2"
+                            CornerRadius="0,0,8,8">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.1" Color="Black"/>
+                        </Border.Effect>
+                        <TextBlock Text="{Binding Timestamp}"
+                                   FontSize="9"
+                                   Foreground="#6B7280"
+                                   FontFamily="Segoe UI"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+
+                    <Grid Grid.Row="1" Margin="28,12,28,12" x:Name="MainContentGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,20,0" x:Name="IdPanel">
+                            <TextBlock Text="{Binding Id}"
+                                       x:Name="IdText"
+                                       FontSize="10"
+                                       Foreground="#3B82F6"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Subtitle}"
+                                       x:Name="SubtitleText"
+                                       FontSize="9"
+                                       Foreground="#9CA3AF"
+                                       FontWeight="Medium"
+                                       Margin="0,1,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="1" Text="{Binding Title}"
+                                   x:Name="TitleText"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="#1F2937"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,0,16,0"
+                                   LineHeight="20"/>
+
+                        <Border Grid.Column="2" Style="{StaticResource BadgeStyle}"
+                                Background="{Binding BadgeColor}"
+                                Visibility="{Binding BadgeVisibility}">
+                            <TextBlock Text="{Binding BadgeText}"
+                                       FontSize="10"
+                                       Foreground="White"
+                                       FontWeight="Bold"
+                                       TextAlignment="Center"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0"
+                                    FlowDirection="RightToLeft" x:Name="IconsPanel">
+                            <ItemsControl ItemsSource="{Binding AssignedTests}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid x:Name="IconGrid" Width="44" Height="44">
+                                            <Grid.RenderTransform>
+                                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="22" CenterY="22"/>
+                                            </Grid.RenderTransform>
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Margin" Value="3"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border, AncestorLevel=2}, Path=DataContext.IsExpanded}" Value="True">
+                                                            <Setter Property="Margin" Value="8"/>
+                                                            <DataTrigger.EnterActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                                       To="1.35" Duration="0:0:0.3">
+                                                                            <DoubleAnimation.EasingFunction>
+                                                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                                                            </DoubleAnimation.EasingFunction>
+                                                                        </DoubleAnimation>
+                                                                        <DoubleAnimation Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                                       To="1.35" Duration="0:0:0.3">
+                                                                            <DoubleAnimation.EasingFunction>
+                                                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                                                            </DoubleAnimation.EasingFunction>
+                                                                        </DoubleAnimation>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.EnterActions>
+                                                            <DataTrigger.ExitActions>
+                                                                <BeginStoryboard>
+                                                                    <Storyboard>
+                                                                        <DoubleAnimation Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                                       To="1.0" Duration="0:0:0.25">
+                                                                            <DoubleAnimation.EasingFunction>
+                                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                                            </DoubleAnimation.EasingFunction>
+                                                                        </DoubleAnimation>
+                                                                        <DoubleAnimation Storyboard.TargetProperty="(Grid.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                                       To="1.0" Duration="0:0:0.25">
+                                                                            <DoubleAnimation.EasingFunction>
+                                                                                <CubicEase EasingMode="EaseInOut"/>
+                                                                            </DoubleAnimation.EasingFunction>
+                                                                        </DoubleAnimation>
+                                                                    </Storyboard>
+                                                                </BeginStoryboard>
+                                                            </DataTrigger.ExitActions>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid.ToolTip>
+                                                <ToolTip Background="#2C2C2E" BorderBrush="Transparent" Foreground="White">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding TestName}" FontWeight="Bold" FontSize="13"/>
+                                                        <TextBlock Text="{Binding Progress, StringFormat={}{0:F0}% Complete}" FontSize="11" Foreground="#CCCCCC"/>
+                                                    </StackPanel>
+                                                </ToolTip>
+                                            </Grid.ToolTip>
+                                            <Border x:Name="IconContainer">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Effect">
+                                                                    <Setter.Value>
+                                                                        <DropShadowEffect Color="{Binding Progress, Converter={StaticResource ProgressToColorConverter}}" 
+                                                                                          BlurRadius="12" 
+                                                                                          ShadowDepth="0" 
+                                                                                          Opacity="0.6"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <Grid>
+                                                    <Ellipse Width="44" Height="44" StrokeThickness="3.5" Fill="Transparent" Stroke="#E5E7EB"/>
+                                                    <Ellipse Width="40" Height="40" Fill="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <Ellipse Width="44" Height="44" StrokeThickness="3.5" Fill="Transparent"
+                                                             Stroke="{Binding Progress, Converter={StaticResource ProgressToColorConverter}}"
+                                                             StrokeDashArray="{Binding Progress, Converter={StaticResource ProgressToDashArrayConverter}}"
+                                                             StrokeStartLineCap="Round"
+                                                             StrokeEndLineCap="Round">
+                                                        <Ellipse.RenderTransform>
+                                                            <RotateTransform Angle="90" CenterX="22" CenterY="22"/>
+                                                        </Ellipse.RenderTransform>
+                                                    </Ellipse>
+                                                    <Image Source="{Binding IconPath}"
+                                                           Stretch="Uniform"
+                                                           Width="26"
+                                                           Height="26"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="2" x:Name="ProgressBarBackground" Background="#E5E7EB" VerticalAlignment="Bottom">
+                        <Grid.Height>
+                            <MultiBinding Converter="{StaticResource ProgressHeightConverter}">
+                                <Binding Path="IsExpanded"/>
+                                <Binding RelativeSource="{RelativeSource AncestorType=Window}" Path="ZoomLevel"/>
+                            </MultiBinding>
+                        </Grid.Height>
+                        <Grid.Effect>
+                            <DropShadowEffect Color="#000000" BlurRadius="5" ShadowDepth="0" Opacity="0.1"/>
+                        </Grid.Effect>
+                        <Border Background="{Binding ProgressColor}" HorizontalAlignment="Left">
+                            <Border.Width>
+                                <MultiBinding Converter="{StaticResource ProgressWidthConverter}">
+                                    <Binding Path="Progress"/>
+                                    <Binding ElementName="ProgressBarBackground" Path="ActualWidth"/>
+                                </MultiBinding>
+                            </Border.Width>
+                        </Border>
+                    </Grid>
+
+                    <!-- Expanded Action Buttons Area -->
+                    <Border Grid.Row="3" 
+                            x:Name="ActionButtonsArea"
+                            Background="#F9FAFB"
+                            BorderBrush="#E5E7EB"
+                            BorderThickness="0,1,0,0"
+                            Padding="28,18,28,18"
+                            Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Opacity" Value="0"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                   To="1.0" Duration="0:0:0.25"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                   From="0" To="88" Duration="0:0:0.3">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <QuadraticEase EasingMode="EaseOut"/>
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                   To="0" Duration="0:0:0.2"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                   To="0" Duration="0:0:0.25">
+                                                        <DoubleAnimation.EasingFunction>
+                                                            <QuadraticEase EasingMode="EaseIn"/>
+                                                        </DoubleAnimation.EasingFunction>
+                                                    </DoubleAnimation>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <!-- Edit Button -->
+                            <Button x:Name="EditCardButton"
+                                    Click="EditButton_Click"
+                                    Tag="{Binding}"
+                                    Margin="0,0,12,0"
+                                    Padding="28,14,28,14"
+                                    Cursor="Hand"
+                                    BorderThickness="0"
+                                    Background="#3B82F6"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"
+                                    FontSize="15"
+                                    MinWidth="120"
+                                    MinHeight="52">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="ButtonBorder"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="12"
+                                                Padding="{TemplateBinding Padding}">
+                                            <Border.Effect>
+                                                <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.3" Color="#3B82F6"/>
+                                            </Border.Effect>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="✏️" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Edit" FontWeight="SemiBold" VerticalAlignment="Center" FontSize="15"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2563EB"/>
+                                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="1.03" ScaleY="1.03" CenterX="0.5" CenterY="0.5"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97" CenterX="0.5" CenterY="0.5"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <Button.ToolTip>
+                                    <ToolTip Background="#2C2C2E" Foreground="White" BorderBrush="Transparent">
+                                        <TextBlock Text="Edit this task" FontSize="12"/>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
+
+                            <!-- Delete Button -->
+                            <Button x:Name="DeleteCardButton"
+                                    Click="DeleteButton_Click"
+                                    Tag="{Binding}"
+                                    Padding="28,14,28,14"
+                                    Cursor="Hand"
+                                    BorderThickness="0"
+                                    Background="#EF4444"
+                                    Foreground="White"
+                                    FontWeight="SemiBold"
+                                    FontSize="15"
+                                    MinWidth="120"
+                                    MinHeight="52">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="ButtonBorder"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="12"
+                                                Padding="{TemplateBinding Padding}">
+                                            <Border.Effect>
+                                                <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.3" Color="#EF4444"/>
+                                            </Border.Effect>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🗑️" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="Delete" FontWeight="SemiBold" VerticalAlignment="Center" FontSize="15"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ButtonBorder" Property="Background" Value="#DC2626"/>
+                                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="1.03" ScaleY="1.03" CenterX="0.5" CenterY="0.5"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97" CenterX="0.5" CenterY="0.5"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <Button.ToolTip>
+                                    <ToolTip Background="#2C2C2E" Foreground="White" BorderBrush="Transparent">
+                                        <TextBlock Text="Delete this task" FontSize="12"/>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FEFEFE" Offset="0"/>
+                <GradientStop Color="#F9FAFB" Offset="0.4"/>
+                <GradientStop Color="#F5F7FA" Offset="0.7"/>
+                <GradientStop Color="#FAFBFC" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Elegant subtle pattern overlay -->
+        <Rectangle x:Name="BackgroundOverlay" Opacity="0.015">
+            <Rectangle.Fill>
+                <RadialGradientBrush Center="0.3,0.3" RadiusX="1.2" RadiusY="1.2">
+                    <GradientStop Color="#E5E7EB" Offset="0"/>
+                    <GradientStop Color="Transparent" Offset="1"/>
+                </RadialGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Border Grid.Row="0" ClipToBounds="False" Background="#FFFFFF">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.06" Color="#000000"/>
+            </Border.Effect>
+            <Grid Margin="60,0,60,0" Height="90">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="56" Height="56" CornerRadius="16" Margin="0,0,20,0"
+                            VerticalAlignment="Center" ClipToBounds="False">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+<GradientStop Color="#3B82F6" Offset="0"/>
+<GradientStop Color="#FFFFFF" Offset="1"/>
+
+
+
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="28" ShadowDepth="8" Opacity="0.25" Color="#3B82F6"/>
+                        </Border.Effect>
+                        <TextBlock Text="📊"
+                                   FontSize="32"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="0" Opacity="0.4" Color="White"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Modic Metal"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#0F172A">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="1" ShadowDepth="0" Opacity="0.05" Color="#000000"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Style="{StaticResource StatusIconButton}"
+                            Click="ToggleSearch_Click"
+                            Margin="0,0,12,0"
+                            ToolTipService.ShowOnDisabled="True">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#3B82F6" Offset="0"/>
+                                <GradientStop Color="#2563EB" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.ToolTip>
+                            <ToolTip>Prikaži/Skrij iskanje</ToolTip>
+                        </Button.ToolTip>
+                        <Path Data="F1 M 9.5,3 A 6.5,6.5 0 0 1 16,9.5 C 16,11.11 15.41,12.59 14.44,13.73 L 14.71,14 L 20,19.29 L 19.29,20 L 14,14.71 L 13.73,14.44 C 12.59,15.41 11.11,16 9.5,16 A 6.5,6.5 0 0 1 3,9.5 A 6.5,6.5 0 0 1 9.5,3 M 9.5,4 A 5.5,5.5 0 0 0 4,9.5 A 5.5,5.5 0 0 0 9.5,15 A 5.5,5.5 0 0 0 15,9.5 A 5.5,5.5 0 0 0 9.5,4 Z"
+                              Fill="White"
+                              Stretch="Uniform"
+                              Width="20"
+                              Height="20"/>
+                    </Button>
+
+                    <Button Content="×"
+                            Style="{StaticResource StatusIconButton}"
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Click="CloseApp_Click"
+                            Margin="0"
+                            ToolTipService.ShowOnDisabled="True">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#F43F5E" Offset="0"/>
+                                <GradientStop Color="#EF4444" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.ToolTip>
+                            <ToolTip>Zapri aplikijo</ToolTip>
+                        </Button.ToolTip>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Padding="60,0,60,0" x:Name="SearchFilterBar" Visibility="Collapsed" Background="#FFFFFF">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.04" Color="#000000"/>
+            </Border.Effect>
+            <Grid Margin="0,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Smart Magnifier Slider -->
+                <Border Grid.Column="0"
+                        CornerRadius="18"
+                        Height="58"
+                        Padding="20,0,20,0"
+                        Margin="0,0,26,0"
+                        VerticalAlignment="Center"
+                        BorderThickness="1.5"
+                        Background="#FFFFFF"
+                        BorderBrush="#E5E7EB"
+                        MinWidth="260">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.08" Color="#000000"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" 
+                                   Text="🔍-" 
+                                   FontSize="19" 
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"
+                                   Foreground="#9CA3AF"
+                                   FontWeight="SemiBold"/>
+                        
+                        <Slider Grid.Column="1"
+                                x:Name="ZoomSlider"
+                                Minimum="0.7"
+                                Maximum="1.5"
+                                Value="1.0"
+                                TickFrequency="0.1"
+                                IsSnapToTickEnabled="False"
+                                VerticalAlignment="Center"
+                                ValueChanged="ZoomSlider_ValueChanged"
+                                Margin="0,0,12,0">
+                            <Slider.ToolTip>
+                                <ToolTip x:Name="ZoomToolTip" 
+                                         Content="100%" 
+                                         Background="#1F2937" 
+                                         Foreground="White" 
+                                         BorderBrush="Transparent"/>
+                            </Slider.ToolTip>
+                        </Slider>
+                        
+                        <TextBlock Grid.Column="2" 
+                                   Text="🔍+" 
+                                   FontSize="19" 
+                                   VerticalAlignment="Center"
+                                   Foreground="#9CA3AF"
+                                   FontWeight="SemiBold"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1"
+                        CornerRadius="18"
+                        Height="58"
+                        Padding="26,0,26,0"
+                        Margin="0,0,34,0"
+                        VerticalAlignment="Center"
+                        BorderThickness="1.5"
+                        Background="#FFFFFF"
+                        BorderBrush="#E5E7EB">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.08" Color="#000000"/>
+                    </Border.Effect>
+                    <Grid>
+                        <TextBlock Text="🔍 Iskanje izdelkov..."
+                                   FontSize="15"
+                                   Foreground="#9CA3AF"
+                                   VerticalAlignment="Center"
+                                   FontWeight="Medium"
+                                   x:Name="SearchPlaceholder"/>
+                        <TextBox x:Name="SearchBox"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="#111827"
+                                 FontSize="15"
+                                 FontWeight="Medium"
+                                 VerticalAlignment="Center"
+                                 CaretBrush="#3B82F6"
+                                 TextChanged="SearchBox_TextChanged"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <!-- VSE (All) Button -->
+                    <Border CornerRadius="14" Margin="7,0,7,0"
+                            Background="#3B82F6"
+                            BorderThickness="0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.2" Color="#3B82F6"/>
+                        </Border.Effect>
+                        <Button x:Name="FilterAll" Click="FilterAll_Click"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Padding="34,15,34,15"
+                                Foreground="White">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        x:Name="ButtonBorder">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <TextBlock Text="✓" FontSize="17" FontWeight="SemiBold" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="VSE" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Background="#1F2937" Foreground="White" BorderBrush="Transparent">
+                                    <TextBlock Text="Prikažni vse kartice" FontSize="12" FontWeight="Medium"/>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </Border>
+
+                    <!-- KONČANO (Completed) Button -->
+                    <Border CornerRadius="14" Margin="7,0,7,0"
+                            Background="#10B981"
+                            BorderThickness="0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.2" Color="#10B981"/>
+                        </Border.Effect>
+                        <Button x:Name="FilterCompleted" Click="FilterCompleted_Click"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Padding="30,15,30,15"
+                                Foreground="White">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        x:Name="ButtonBorder">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <TextBlock Text="✓" FontSize="17" FontWeight="SemiBold" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="KONČANO" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Background="#1F2937" Foreground="White" BorderBrush="Transparent">
+                                    <TextBlock Text="Prikaži končane kartice" FontSize="12" FontWeight="Medium"/>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </Border>
+
+                    <!-- V TEKU (In Progress) Button -->
+                    <Border CornerRadius="14" Margin="7,0,7,0"
+                            Background="#F59E0B"
+                            BorderThickness="0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.2" Color="#F59E0B"/>
+                        </Border.Effect>
+                        <Button x:Name="FilterInProgress" Click="FilterInProgress_Click"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Padding="30,15,30,15"
+                                Foreground="White">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        x:Name="ButtonBorder">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <TextBlock Text="⟳" FontSize="17" FontWeight="SemiBold" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="V TEKU" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Background="#1F2937" Foreground="White" BorderBrush="Transparent">
+                                    <TextBlock Text="Prikaži kartice v teku" FontSize="12" FontWeight="Medium"/>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </Border>
+
+                    <!-- KRITIČNO (Critical) Button -->
+                    <Border CornerRadius="14" Margin="7,0,7,0"
+                            Background="#EF4444"
+                            BorderThickness="0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.2" Color="#EF4444"/>
+                        </Border.Effect>
+                        <Button x:Name="FilterCritical" Click="FilterCritical_Click"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Padding="30,15,30,15"
+                                Foreground="White">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}"
+                                                        x:Name="ButtonBorder">
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <TextBlock Text="⚠" FontSize="17" FontWeight="SemiBold" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="KRITIČNO" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter TargetName="ButtonBorder" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                            <Button.ToolTip>
+                                <ToolTip Background="#1F2937" Foreground="White" BorderBrush="Transparent">
+                                    <TextBlock Text="Prikaži kritične kartice" FontSize="12" FontWeight="Medium"/>
+                                </ToolTip>
+                            </Button.ToolTip>
+                        </Button>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="2"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      PanningMode="VerticalOnly"
+                      Padding="80,20,80,20"
+>
+            <ItemsControl x:Name="ProcessCards"
+                          ItemTemplate="{StaticResource CardTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
+</Window>

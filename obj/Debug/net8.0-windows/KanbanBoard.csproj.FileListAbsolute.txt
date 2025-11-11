@@ -1,0 +1,64 @@
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\bin\Debug\net8.0-windows\KanbanBoard.exe
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\bin\Debug\net8.0-windows\KanbanBoard.deps.json
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\bin\Debug\net8.0-windows\KanbanBoard.runtimeconfig.json
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\bin\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\bin\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.cache
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.lref
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.g.resources
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfoInputs.cache
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfo.cs
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.csproj.CoreCompileInputs.cache
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.sourcelink.json
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\refint\KanbanBoard.dll
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\KanbanBoard.genruntimeconfig.cache
+C:\Users\Aman Qureshi\source\repos\KanbanBoard\KanbanBoard\obj\Debug\net8.0-windows\ref\KanbanBoard.dll
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.exe
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.deps.json
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.runtimeconfig.json
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.cache
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.lref
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.g.resources
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfoInputs.cache
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfo.cs
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.csproj.CoreCompileInputs.cache
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\refint\KanbanBoard.dll
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.genruntimeconfig.cache
+C:\Users\mw43a\Downloads\Kanban-board-app-main\Kanban-board-app-main\obj\Debug\net8.0-windows\ref\KanbanBoard.dll
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.exe
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.deps.json
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.runtimeconfig.json
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\bin\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.cache
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard_MarkupCompile.lref
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.g.resources
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfoInputs.cache
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.AssemblyInfo.cs
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.csproj.CoreCompileInputs.cache
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.dll
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\refint\KanbanBoard.dll
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.pdb
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\KanbanBoard.genruntimeconfig.cache
+C:\Users\Aman Qureshi\Desktop\Kanban-board-app-main\obj\Debug\net8.0-windows\ref\KanbanBoard.dll
